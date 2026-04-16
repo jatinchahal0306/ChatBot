@@ -1,0 +1,195 @@
+{
+   "survey_title":"Snacking Study",
+   "domain":"Snacking Habits",
+   "sections":[
+      {
+         "section_name":"Demographics",
+         "questions":[
+            {
+               "question_id":"Q1",
+               "question_type":"single_select",
+               "question_text":"What is your age range?",
+               "response_type":"single_choice",
+               "options":[
+                  "18-24",
+                  "25-34",
+                  "35-44",
+                  "45-54",
+                  "55 or older"
+               ],
+               "row_opt":null,
+               "col_opt":null,
+               "skip_logic":null
+            },
+            {
+               "question_id":"Q2",
+               "question_type":"single_select",
+               "question_text":"What is your gender?",
+               "response_type":"single_choice",
+               "options":[
+                  "Male",
+                  "Female",
+                  "Non-binary",
+                  "Other (please specified)",
+                  "Prefer not to say"
+               ],
+               "row_opt":null,
+               "col_opt":null,
+               "skip_logic":null
+            },
+            {
+               "question_id":"Q3",
+               "question_type":"single_select",
+               "question_text":"What is your occupation?",
+               "response_type":"single_choice",
+               "options":[
+                  "Student",
+                  "Full-time employee",
+                  "Part-time employee",
+                  "Self-employed",
+                  "Retired",
+                  "Other (please specified)",
+                  "Prefer not to say"
+               ],
+               "row_opt":null,
+               "col_opt":null,
+               "skip_logic":"Terminate if Q3=\"Prefer not to say\""
+            }
+         ]
+      },
+      {
+         "section_name":"Snacking Habits",
+         "questions":[
+            {
+               "question_id":"Q4",
+               "question_type":"single_select",
+               "question_text":"How often do you snack during the day?",
+               "response_type":"single_choice",
+               "options":[
+                  "Rarely",
+                  "Occasionally",
+                  "Regularly",
+                  "Very frequently"
+               ],
+               "row_opt":null,
+               "col_opt":null,
+               "skip_logic":null
+            },
+            {
+               "question_id":"Q5",
+               "question_type":"multi_select",
+               "question_text":"What types of snacks do you typically eat during the day?",
+               "response_type":"multi_choice",
+               "options":[
+                  "Fresh fruit",
+                  "Dried fruit",
+                  "Nuts",
+                  "Jerky",
+                  "Crackers",
+                  "Cookies",
+                  "Candy",
+                  "Other (please specified)",
+                  "None of the above"
+               ],
+               "row_opt":null,
+               "col_opt":null,
+               "skip_logic":null
+            },
+            {
+               "question_id":"Q6",
+               "question_type":"single_select",
+               "question_text":"Which snack do you enjoy the most?",
+               "response_type":"single_choice",
+               "options":[
+                  "Fresh fruit",
+                  "Dried fruit",
+                  "Nuts",
+                  "Jerky",
+                  "Crackers",
+                  "Cookies",
+                  "Candy",
+                  "Other (please specified)",
+                  "None of the above"
+               ],
+               "row_opt":null,
+               "col_opt":null,
+               "skip_logic":"Skip if Q5=\"None of the above\""
+            },
+            {
+               "question_id":"Q7",
+               "question_type":"open_end",
+               "question_text":"Why do you enjoy this specific snack the most?",
+               "response_type":"open_text",
+               "options":null,
+               "row_opt":null,
+               "col_opt":null,
+               "skip_logic":"Show if Q6=\"Fresh fruit\", \"Dried fruit\", \"Nuts\", \"Jerky\", \"Crackers\", \"Cookies\", \"Candy\", \"Other (please specified)\""
+            },
+            {
+               "question_id":"Q8",
+               "question_type":"single_select",
+               "question_text":"How much are you willing to spend on a single snack item?",
+               "response_type":"single_choice",
+               "options":[
+                  "Less than $1",
+                  "$1-$2",
+                  "$2-$3",
+                  "$3-$4",
+                  "$4 or more"
+               ],
+               "row_opt":null,
+               "col_opt":null,
+               "skip_logic":null
+            },
+            {
+               "question_id":"Q9",
+               "question_type":"single_select",
+               "question_text":"How often do you purchase snacks from a grocery store?",
+               "response_type":"single_choice",
+               "options":[
+                  "Daily",
+                  "Weekly",
+                  "Monthly",
+                  "Rarely",
+                  "Never"
+               ],
+               "row_opt":null,
+               "col_opt":null,
+               "skip_logic":null
+            },
+            {
+               "question_id":"Q10",
+               "question_type":"single_select",
+               "question_text":"How important is the brand of a snack to you?",
+               "response_type":"single_choice",
+               "options":[
+                  "Very important",
+                  "Somewhat important",
+                  "Neutral",
+                  "Not very important",
+                  "Not at all important"
+               ],
+               "row_opt":null,
+               "col_opt":null,
+               "skip_logic":null
+            },
+            {
+               "question_id":"Q11",
+               "question_type":"single_select",
+               "question_text":"How likely are you to try a new snack product?",
+               "response_type":"single_choice",
+               "options":[
+                  "Very likely",
+                  "Likely",
+                  "Neutral",
+                  "Unlikely",
+                  "Very unlikely"
+               ],
+               "row_opt":null,
+               "col_opt":null,
+               "skip_logic":null
+            }
+         ]
+      }
+   ]
+}

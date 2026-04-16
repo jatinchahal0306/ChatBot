@@ -1,0 +1,83 @@
+User:
+Generate some questionnaire related to snack feedback
+
+Assistant message:
+Survey Title: Snacking Study
+Domain: Snacking Habits
+
+Section: Demographics
+Question ID: Q1
+Question Type: single_select
+Question Text: What is your age range?
+Response Type: single_choice
+Options: 18-24, 25-34, 35-44, 45-54, 55 or older
+
+Question ID: Q2
+Question Type: single_select
+Question Text: What is your gender?
+Response Type: single_choice
+Options: Male, Female, Non-binary, Other (please specified), Prefer not to say
+
+Question ID: Q3
+Question Type: single_select
+Question Text: What is your occupation?
+Response Type: single_choice
+Options: Student, Full-time employee, Part-time employee, Self-employed, Retired, Other (please specified), Prefer not to say
+Skip Logic: Terminate if Q3 = "Prefer not to say"
+
+Section: Snacking Habits
+Question ID: Q4
+Question Type: single_select
+Question Text: How often do you snack during the day?
+Response Type: single_choice
+Options: Rarely, Occasionally, Regularly, Very frequently
+
+Question ID: Q5
+Question Type: multi_select
+Question Text: What types of snacks do you typically eat during the day?
+Response Type: multi_choice
+Options: Fresh fruit, Dried fruit, Nuts, Jerky, Crackers, Cookies, Candy, Other (please specified), None of the above
+
+Question ID: Q6
+Question Type: single_select
+Question Text: Which snack do you enjoy the most?
+Response Type: single_choice
+Options: Fresh fruit, Dried fruit, Nuts, Jerky, Crackers, Cookies, Candy, Other (please specified), None of the above
+Skip Logic: Skip if Q5 = "None of the above"
+
+Question ID: Q7
+Question Type: open_end
+Question Text: Why do you enjoy this specific snack the most?
+Response Type: open_text
+Skip Logic: Show if Q6 = "Fresh fruit", "Dried fruit", "Nuts", "Jerky", "Crackers", "Cookies", "Candy", "Other (please specified)"
+
+Question ID: Q8
+Question Type: single_select
+Question Text: How much are you willing to spend on a single snack item?
+Response Type: single_choice
+Options: Less than $1, $1-$2, $2-$3, $3-$4, $4 or more
+
+Question ID: Q9
+Question Type: single_select
+Question Text: How often do you purchase snacks from a grocery store?
+Response Type: single_choice
+Options: Daily, Weekly, Monthly, Rarely, Never
+
+Question ID: Q10
+Question Type: single_select
+Question Text: How important is the brand of a snack to you?
+Response Type: single_choice
+Options: Very important, Somewhat important, Neutral, Not very important, Not at all important
+
+Question ID: Q11
+Question Type: single_select
+Question Text: How likely are you to try a new snack product?
+Response Type: single_choice
+Options: Very likely, Likely, Neutral, Unlikely, Very unlikely
+
+
+User:
+Thank you
+
+Assistant:
+Most welcome ;)
