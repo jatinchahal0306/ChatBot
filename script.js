@@ -1,15 +1,15 @@
 const chatBox = document.getElementById("chatBox");
-const BASE_URL = "http://136.119.158.223:8000";
 
 async function sendMessage() {
     const input = document.getElementById("promptInput");
     const message = input.value.trim();
     if (!message) return;
 
-    chatBox.innerHTML = "<p>Loading...</p>";
+    addMessage(message, "user");
+    input.value = "";
 
     try {
-        const res = await fetch(`${BASE_URL}/send-message`, {
+        const res = await fetch("http://136.119.158.223:8000/send-message", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -19,41 +19,39 @@ async function sendMessage() {
 
         const data = await res.json();
 
-        if (data.success && data.parsed_json) {
-            renderJSON(data.parsed_json);
+        if (data.parsed_json) {
+            const json = typeof data.parsed_json === "string"
+                ? JSON.parse(data.parsed_json)
+                : data.parsed_json;
+
+            renderJSON(json);
         } else {
-            chatBox.innerHTML = "<p>Error loading response</p>";
+            addMessage(data.assistant_text, "bot");
         }
 
-    } catch {
-        chatBox.innerHTML = "<p>Server error</p>";
+    } catch (err) {
+        addMessage("Server error", "bot");
     }
-
-    input.value = "";
 }
 
-async function clearChat() {
-    try {
-        await fetch(`${BASE_URL}/clear-chat`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({})
-        });
-    } catch { }
-
-    chatBox.innerHTML = "";
+function addMessage(text, sender) {
+    const div = document.createElement("div");
+    div.className = `message ${sender}`;
+    div.innerText = text;
+    chatBox.appendChild(div);
+    chatBox.scrollTop = chatBox.scrollHeight;
 }
 
 function renderJSON(data) {
     const container = document.createElement("div");
-    container.className = "message";
+    container.className = "message bot";
 
-    let html = `<h3>${data.survey_title || ""}</h3>`;
+    let html = `<h3>${data.survey_title}</h3>`;
 
-    (data.sections || []).forEach(section => {
+    data.sections.forEach(section => {
         html += `<div class="section"><h4>${section.section_name}</h4>`;
 
-        (section.questions || []).forEach(q => {
+        section.questions.forEach(q => {
             html += renderQuestion(q);
         });
 
@@ -63,8 +61,8 @@ function renderJSON(data) {
     html += `<button onclick="submitAnswers()">Submit</button>`;
 
     container.innerHTML = html;
-    chatBox.innerHTML = "";
     chatBox.appendChild(container);
+    chatBox.scrollTop = chatBox.scrollHeight;
 }
 
 function renderQuestion(q) {
@@ -73,16 +71,14 @@ function renderQuestion(q) {
     `;
 
     if (q.response_type === "multi_choice") {
-        (q.options || []).forEach(opt => {
+        q.options.forEach(opt => {
             html += `<label><input type="checkbox" value="${opt}">${opt}</label>`;
         });
-    }
-    else if (q.response_type === "single_choice") {
-        (q.options || []).forEach(opt => {
+    } else if (q.response_type === "single_choice") {
+        q.options.forEach(opt => {
             html += `<label><input type="radio" name="${q.question_id}" value="${opt}">${opt}</label>`;
         });
-    }
-    else {
+    } else {
         html += `<input type="text" placeholder="Your answer..." />`;
     }
 
@@ -90,7 +86,7 @@ function renderQuestion(q) {
     return html;
 }
 
-async function submitAnswers() {
+function submitAnswers() {
     let txtOutput = "";
 
     const surveyTitle = document.querySelector("h3")?.innerText || "";
@@ -118,28 +114,7 @@ async function submitAnswers() {
         });
     });
 
-    downloadTXT(txtOutput);
-
-    try {
-        await fetch(`${BASE_URL}/send-message`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                message: txtOutput
-            })
-        });
-
-        alert("Responses sent to chatbot");
-
-    } catch {
-        alert("Error sending responses");
-    }
-}
-
-function downloadTXT(content) {
-    const blob = new Blob([content], { type: "text/plain" });
+    const blob = new Blob([txtOutput], { type: "text/plain" });
     const a = document.createElement("a");
     a.href = URL.createObjectURL(blob);
     a.download = "response.txt";
