@@ -1,31 +1,47 @@
 const chatBox = document.getElementById("chatBox");
+const BASE_URL = "http://136.119.158.223:8000";
 
-function loadFile() {
-    const file = document.getElementById("fileInput").files[0];
-    if (!file) return;
+async function sendMessage() {
+    const input = document.getElementById("promptInput");
+    const message = input.value.trim();
+    if (!message) return;
 
-    const reader = new FileReader();
+    chatBox.innerHTML = "<p>Loading...</p>";
 
-    reader.onload = function (e) {
-        let content = e.target.result;
+    try {
+        const res = await fetch(`${BASE_URL}/send-message`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ message })
+        });
 
-        try {
-            const json = JSON.parse(content);
-            parseResponse(json);
-        } catch {
-            parseResponse(content);
+        const data = await res.json();
+
+        if (data.success && data.parsed_json) {
+            renderJSON(data.parsed_json);
+        } else {
+            chatBox.innerHTML = "<p>Error loading response</p>";
         }
-    };
 
-    reader.readAsText(file);
+    } catch {
+        chatBox.innerHTML = "<p>Server error</p>";
+    }
+
+    input.value = "";
 }
 
-function parseResponse(data) {
-    if (typeof data === "string") {
-        renderTXT(data);
-    } else {
-        renderJSON(data);
-    }
+async function clearChat() {
+    try {
+        await fetch(`${BASE_URL}/clear-chat`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({})
+        });
+    } catch { }
+
+    chatBox.innerHTML = "";
 }
 
 function renderJSON(data) {
@@ -53,8 +69,8 @@ function renderJSON(data) {
 
 function renderQuestion(q) {
     let html = `<div class="question" data-id="${q.question_id}">
-    <p><b>${q.question_id}:</b> ${q.question_text}</p>
-  `;
+        <p><b>${q.question_id}:</b> ${q.question_text}</p>
+    `;
 
     if (q.response_type === "multi_choice") {
         (q.options || []).forEach(opt => {
@@ -74,59 +90,7 @@ function renderQuestion(q) {
     return html;
 }
 
-function renderTXT(text) {
-    const container = document.createElement("div");
-    container.className = "message";
-
-    const lines = text.split("\n");
-
-    let html = "";
-    let currentQ = null;
-    let isOpenText = false;
-
-    lines.forEach(line => {
-        line = line.trim();
-
-        if (line.startsWith("Survey Title")) {
-            html += `<h3>${line.split(":")[1]}</h3>`;
-        }
-        else if (line.startsWith("Section")) {
-            html += `<div class="section"><h4>${line.split(":")[1]}</h4>`;
-        }
-        else if (line.startsWith("Question ID")) {
-            currentQ = line.split(":")[1].trim();
-            html += `<div class="question" data-id="${currentQ}"><b>${currentQ}</b>`;
-            isOpenText = false;
-        }
-        else if (line.startsWith("Question Text")) {
-            html += `<p>${line.split(":")[1]}</p>`;
-        }
-        else if (line.startsWith("Response Type")) {
-            if (line.includes("open_text")) {
-                isOpenText = true;
-            }
-        }
-        else if (line.startsWith("Options")) {
-            const opts = line.split(":")[1].split(",");
-            opts.forEach(opt => {
-                html += `<label><input type="radio" name="${currentQ}" value="${opt}">${opt}</label>`;
-            });
-            html += `</div>`;
-        }
-        else if (isOpenText && line === "") {
-            html += `<input type="text" />`;
-            html += `</div>`;
-        }
-    });
-
-    html += `<button onclick="submitAnswers()">Submit</button>`;
-
-    container.innerHTML = html;
-    chatBox.innerHTML = "";
-    chatBox.appendChild(container);
-}
-
-function submitAnswers() {
+async function submitAnswers() {
     let txtOutput = "";
 
     const surveyTitle = document.querySelector("h3")?.innerText || "";
@@ -154,7 +118,28 @@ function submitAnswers() {
         });
     });
 
-    const blob = new Blob([txtOutput], { type: "text/plain" });
+    downloadTXT(txtOutput);
+
+    try {
+        await fetch(`${BASE_URL}/send-message`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                message: txtOutput
+            })
+        });
+
+        alert("Responses sent to chatbot");
+
+    } catch {
+        alert("Error sending responses");
+    }
+}
+
+function downloadTXT(content) {
+    const blob = new Blob([content], { type: "text/plain" });
     const a = document.createElement("a");
     a.href = URL.createObjectURL(blob);
     a.download = "response.txt";

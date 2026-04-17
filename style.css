@@ -24,11 +24,10 @@ body {
 }
 
 h2 {
-    padding: 18px;
+    padding: 10px;
     background: #111;
     color: white;
     text-align: center;
-    letter-spacing: 1px;
 }
 
 .chat-box {
@@ -55,7 +54,6 @@ h2 {
 
 .section h4 {
     margin-bottom: 10px;
-    color: #333;
 }
 
 .question {
@@ -66,16 +64,10 @@ h2 {
     border: 1px solid #e0e0e0;
 }
 
-.question p {
-    margin-bottom: 8px;
-    font-weight: 500;
-}
-
 label {
     display: block;
     padding: 6px 10px;
     border-radius: 6px;
-    transition: 0.2s;
     cursor: pointer;
 }
 
@@ -86,7 +78,6 @@ label:hover {
 input[type="radio"],
 input[type="checkbox"] {
     margin-right: 8px;
-    cursor: pointer;
 }
 
 input[type="text"] {
@@ -94,34 +85,27 @@ input[type="text"] {
     padding: 10px;
     border-radius: 6px;
     border: 1px solid #ccc;
-    outline: none;
     margin-top: 5px;
 }
 
-input[type="text"]:focus {
-    border-color: #667eea;
-}
-
 button {
-    margin-top: 20px;
-    width: 100%;
-    padding: 12px;
+    margin-top: 10px;
+    padding: 10px;
     border: none;
-    border-radius: 8px;
-    background: linear-gradient(135deg, #667eea, #764ba2);
+    border-radius: 6px;
+    background: #667eea;
     color: white;
-    font-size: 16px;
     cursor: pointer;
-    transition: 0.3s;
-}
-
-button:hover {
-    opacity: 0.9;
-    transform: scale(1.02);
 }
 
 .input-area {
+    display: flex;
+    gap: 10px;
     padding: 15px;
     border-top: 1px solid #ddd;
     background: #fafafa;
+}
+
+.input-area input {
+    flex: 1;
 }
