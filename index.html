@@ -9,17 +9,41 @@
 
 <body>
 
-    <div class="container">
-        <h2>optibot</h2>
+    <!DOCTYPE html>
 
-        <div id="chatBox" class="chat-box"></div>
+    <html>
 
-        <div class="input-area">
-            <input type="text" id="promptInput" placeholder="Type your message..." />
-            <button onclick="sendMessage()">Send</button>
-            <button onclick="clearChat()">Clear</button>
+    <head>
+        <meta charset="UTF-8">
+        <title>Chat-bot UI</title>
+        <link rel="stylesheet" href="style.css">
+    </head>
+
+    <body>
+
+        <div class="container">
+            <h2>Optibot</h2>
+
+            <div id="chatBox" class="chat-box"></div>
+
+            <div class="input-area">
+                <!-- ✅ ID fixed -->
+                <input type="text" id="userInput" placeholder="Type your message..." />
+                <button onclick="sendMessage()">Send</button>
+                <button onclick="clearChat()">Clear</button>
+            </div>
+
+            <!-- ✅ survey container add kiya (important) -->
+            <div id="survey" class="survey"></div>
         </div>
-    </div>
+
+        <script src="script.js"></script>
+
+
+    </body>
+
+    </html>
+
 
     <script src="script.js"></script>
 </body>
