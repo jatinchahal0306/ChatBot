@@ -56,6 +56,7 @@ async function sendMessage() {
 
 
 function renderSurvey(data) {
+    window.currentSurvey = data
     const wrapper = document.getElementById("surveyWrapper");
     const container = document.getElementById("survey");
 
@@ -121,6 +122,7 @@ function renderSurvey(data) {
 
 function submitSurvey() {
 
+
     const answers = {};
 
     document.querySelectorAll(".question").forEach(q => {
@@ -141,26 +143,24 @@ function submitSurvey() {
         answers[question] = value.join(", ");
     });
 
-
     const history = JSON.parse(localStorage.getItem("surveyHistory")) || [];
 
     history.push({
         type: "survey_response",
+        title: window.currentSurvey?.survey_title || "Survey",
+        survey: window.currentSurvey,
         answers: answers,
         time: new Date().toLocaleString()
     });
 
-
     localStorage.setItem("surveyHistory", JSON.stringify(history));
-
 
     document.getElementById("surveyWrapper").classList.add("hidden");
     document.body.style.overflow = "auto";
 
     addMessage("Survey submitted ✅", "bot");
 
-
-    renderSurveySummary(answers);
+    renderSurveySummary(history[history.length - 1]);
 
 
 }
@@ -219,8 +219,6 @@ function loadChat() {
         });
 }
 
-
-
 function showTyping() {
     const box = document.getElementById("chatBox");
 
@@ -267,16 +265,18 @@ function setLoading(isLoading) {
     });
 
 }
-function renderSurveySummary(answers) {
+function renderSurveySummary(item) {
     const box = document.getElementById("chatBox");
-
     const div = document.createElement("div");
     div.className = "message bot";
-    div.setAttribute("data-label", "Your filled (Survey)");
+    div.setAttribute("data-label", "You (Survey)");
 
-    let html = "<b>Your Responses:</b><br><br>";
+    let html = `
+    <b>📋 ${item.title}</b><br>
+    <small>${item.time}</small><br><br>
+`;
 
-    Object.entries(answers).forEach(([q, ans]) => {
+    Object.entries(item.answers).forEach(([q, ans]) => {
         html += `<div><b>${q}</b><br>${ans || "No answer"}</div><br>`;
     });
 
@@ -284,5 +284,4 @@ function renderSurveySummary(answers) {
 
     box.appendChild(div);
     box.scrollTop = box.scrollHeight;
-
 }
