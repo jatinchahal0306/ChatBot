@@ -1,4 +1,4 @@
-const BASE = "http://136.119.158.223:8000";
+const BASE = "api";
 // const USE_MOCK = true;
 
 function addMessage(text, type) {
