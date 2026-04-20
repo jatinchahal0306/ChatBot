@@ -40,38 +40,7 @@ h2 {
     flex-direction: column;
 }
 
-/* SURVEY */
-.survey-wrapper {
-    max-height: 40%;
-    display: flex;
-    flex-direction: column;
-    border-top: 1px solid #ddd;
-    overflow: hidden;
-}
-
-.survey {
-    flex: 1;
-    overflow-y: auto;
-    padding: 10px;
-}
-
-.submit-area {
-    padding: 10px;
-    border-top: 1px solid #ddd;
-    background: #fafafa;
-}
-
-/* INPUT FIXED */
-.input-area {
-    flex-shrink: 0;
-    display: flex;
-    gap: 10px;
-    padding: 10px;
-    border-top: 1px solid #ddd;
-    background: white;
-}
-
-/* MESSAGE UI */
+/* MESSAGE */
 .message {
     max-width: 70%;
     margin-bottom: 10px;
@@ -101,6 +70,67 @@ h2 {
     opacity: 0.6;
 }
 
+/* MODAL */
+.survey-wrapper {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-box {
+    width: 90%;
+    max-width: 700px;
+    max-height: 80vh;
+    background: white;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.survey {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+}
+
+.submit-area {
+    padding: 10px;
+    border-top: 1px solid #ddd;
+    text-align: right;
+}
+
+/* INPUT */
+.input-area {
+    display: flex;
+    gap: 10px;
+    padding: 10px;
+    border-top: 1px solid #ddd;
+    background: white;
+}
+
+.input-area input {
+    flex: 1;
+    padding: 10px;
+}
+
+/* BUTTON */
+button {
+    padding: 10px;
+    background: #667eea;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
 /* SURVEY UI */
 .section {
     margin-top: 10px;
@@ -123,32 +153,16 @@ input[type="text"] {
     margin-top: 5px;
 }
 
-/* BUTTON */
-button {
-    padding: 10px;
-    background: #667eea;
-    color: white;
-    border: none;
-    cursor: pointer;
-    border-radius: 5px;
-}
-
-.input-area input {
-    flex: 1;
-    padding: 10px;
-}
-
 /* HIDE */
 .hidden {
     display: none;
 }
 
-/* typing bubble */
+/* typing */
 .typing {
     width: 60px;
     display: flex;
     justify-content: space-between;
-    align-items: center;
 }
 
 .typing span {
