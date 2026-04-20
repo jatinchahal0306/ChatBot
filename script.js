@@ -1,5 +1,4 @@
 const BASE = "api";
-// const USE_MOCK = true;
 
 function addMessage(text, type) {
     const box = document.getElementById("chatBox");
@@ -16,54 +15,12 @@ async function sendMessage() {
     const msg = input.value.trim();
     if (!msg) return;
 
-
     setLoading(true);
     addMessage(msg, "user");
     input.value = "";
     showTyping();
 
     try {
-
-        /* ================= MOCK MODE =================
-        setTimeout(() => {
-            removeTyping();
-    
-            const mockData = {
-                survey_title: "Demo Beverage Survey",
-                sections: [
-                    {
-                        section_name: "Screener",
-                        questions: [
-                            {
-                                question_text: "What is your age group?",
-                                options: ["18-24", "25-30", "31-34"]
-                            },
-                            {
-                                question_text: "Do you drink energy beverages?",
-                                options: ["Yes", "No"]
-                            }
-                        ]
-                    },
-                    {
-                        section_name: "Concept Evaluation",
-                        questions: [
-                            {
-                                question_text: "How appealing is this product?",
-                                options: ["Very appealing", "Neutral", "Not appealing"]
-                            }
-                        ]
-                    }
-                ]
-            };
-    
-            addMessage("Survey generated (mock)", "bot");
-            renderSurvey(mockData);
-            setLoading(false);
-    
-        }, 1000);
-        return;
-        ================================================= */
-
         const res = await fetch(BASE + "/send-message", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -89,12 +46,10 @@ async function sendMessage() {
 
     setLoading(false);
 
-
 }
 
 function renderSurvey(data) {
     const box = document.getElementById("chatBox");
-
 
     const div = document.createElement("div");
     div.className = "message bot";
@@ -102,55 +57,35 @@ function renderSurvey(data) {
 
     let html = `<b>📋 ${data.survey_title || "Survey"}</b><br><br>`;
 
-    data.sections?.forEach(sec => {
-        html += `<div class="section"><b>${sec.section_name}</b>`;
+    if (!data.sections || data.sections.length === 0) {
+        html += "No questions available";
+    } else {
+        data.sections.forEach(sec => {
+            html += `<div class="section"><b>${sec.section_name}</b>`;
 
-        sec.questions?.forEach(q => {
-            html += `<div class="question"><b>• ${q.question_text}</b><br>`;
-            if (q.options) {
-                q.options.forEach(opt => {
-                    html += `- ${opt}<br>`;
-                });
-            }
+            sec.questions?.forEach(q => {
+                html += `<div class="question"><b>• ${q.question_text}</b><br>`;
+                if (q.options) {
+                    q.options.forEach(opt => {
+                        html += `- ${opt}<br>`;
+                    });
+                }
+                html += `</div>`;
+            });
+
             html += `</div>`;
         });
-
-        html += `</div>`;
-    });
+    }
 
     div.innerHTML = html;
     box.appendChild(div);
     box.scrollTop = box.scrollHeight;
-
 
 }
 
 function loadChat() {
     const chatBox = document.getElementById("chatBox");
     chatBox.innerHTML = "";
-
-
-    /* ================= MOCK HISTORY =================
-    addMessage("Create a survey", "user");
-    
-    const mockSurvey = {
-        survey_title: "Previous Survey",
-        sections: [
-            {
-                section_name: "Usage",
-                questions: [
-                    {
-                        question_text: "How often do you drink soda?",
-                        options: ["Daily", "Weekly", "Rarely"]
-                    }
-                ]
-            }
-        ]
-    };
-    
-    renderSurvey(mockSurvey);
-    return;
-    ================================================= */
 
     fetch(BASE + "/get-chat")
         .then(res => res.json())
@@ -166,11 +101,15 @@ function loadChat() {
                     }
                 }
             });
+
+            setTimeout(() => {
+                chatBox.scrollTop = chatBox.scrollHeight;
+            }, 100);
+
         })
         .catch(() => {
             addMessage("Failed to load chat", "bot");
         });
-
 
 }
 
@@ -184,10 +123,10 @@ async function clearChat() {
 
 function showTyping() {
     const box = document.getElementById("chatBox");
+
     const div = document.createElement("div");
     div.className = "message bot typing-indicator";
     div.setAttribute("data-label", "Bot");
-
 
     div.innerHTML = `
     <div class="typing">
@@ -200,7 +139,6 @@ function showTyping() {
     box.appendChild(div);
     box.scrollTop = box.scrollHeight;
 
-
 }
 
 function removeTyping() {
@@ -210,7 +148,6 @@ function removeTyping() {
 function setLoading(isLoading) {
     const input = document.getElementById("userInput");
     const buttons = document.querySelectorAll(".input-area button");
-
 
     input.disabled = isLoading;
 
@@ -222,6 +159,10 @@ function setLoading(isLoading) {
 
 
 }
+
+document.getElementById("userInput").addEventListener("keypress", function (e) {
+    if (e.key === "Enter") sendMessage();
+});
 
 window.addEventListener("DOMContentLoaded", () => {
     loadChat();
