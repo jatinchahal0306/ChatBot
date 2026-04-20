@@ -5,9 +5,7 @@ function addMessage(text, type) {
 
     const div = document.createElement("div");
     div.className = "message " + type;
-
     div.setAttribute("data-label", type === "user" ? "You" : "Bot");
-
     div.innerText = text;
 
     box.appendChild(div);
@@ -15,7 +13,6 @@ function addMessage(text, type) {
 
 }
 
-// SEND MESSAGE
 async function sendMessage() {
     const input = document.getElementById("userInput");
     const msg = input.value.trim();
@@ -24,6 +21,8 @@ async function sendMessage() {
     addMessage(msg, "user");
     input.value = "";
 
+    showTyping();
+
     try {
         const res = await fetch(BASE + "/send-message", {
             method: "POST",
@@ -31,40 +30,52 @@ async function sendMessage() {
             body: JSON.stringify({ message: msg })
         });
 
-
         const data = await res.json();
 
-        addMessage("Survey generated ✅", "bot");
+        removeTyping();
 
         if (data.parsed_json) {
+            addMessage("Survey generated", "bot");
             renderSurvey(data.parsed_json);
         }
+        else if (data.assistant_text) {
+            addMessage(data.assistant_text, "bot");
+        }
+        else {
+            addMessage("No valid response", "bot");
+        }
 
-
-    } catch (err) {
-        addMessage("Server error ❌", "bot");
+    } catch {
+        removeTyping();
+        addMessage("Server error", "bot");
     }
+
+
 }
 
-// RENDER SURVEY
 function renderSurvey(data) {
+    const wrapper = document.getElementById("surveyWrapper");
     const container = document.getElementById("survey");
+
+
+    wrapper.classList.remove("hidden");
     container.innerHTML = "";
 
-    const title = document.createElement("h2");
-    title.innerText = data.survey_title;
+    const title = document.createElement("h3");
+    title.innerText = data.survey_title || "Survey";
     container.appendChild(title);
 
-    data.sections.forEach(sec => {
+    data.sections?.forEach(sec => {
         const secDiv = document.createElement("div");
         secDiv.className = "section";
 
+        const h4 = document.createElement("h4");
+        h4.innerText = sec.section_name || "Section";
+        secDiv.appendChild(h4);
 
-        const h3 = document.createElement("h3");
-        h3.innerText = sec.section_name;
-        secDiv.appendChild(h3);
+        sec.questions?.forEach(q => {
+            if (!q.question_text) return;
 
-        sec.questions.forEach(q => {
             const qDiv = document.createElement("div");
             qDiv.className = "question";
 
@@ -73,29 +84,29 @@ function renderSurvey(data) {
             qDiv.appendChild(label);
 
             if (q.response_type === "single_choice") {
-                q.options.forEach(opt => {
+                q.options?.forEach(opt => {
                     const radio = document.createElement("input");
                     radio.type = "radio";
                     radio.name = q.question_id;
+                    radio.value = opt;
 
                     qDiv.appendChild(radio);
                     qDiv.appendChild(document.createTextNode(opt));
                     qDiv.appendChild(document.createElement("br"));
                 });
             }
-
             else if (q.response_type === "multi_choice") {
-                q.options.forEach(opt => {
+                q.options?.forEach(opt => {
                     const check = document.createElement("input");
                     check.type = "checkbox";
+                    check.value = opt;
 
                     qDiv.appendChild(check);
                     qDiv.appendChild(document.createTextNode(opt));
                     qDiv.appendChild(document.createElement("br"));
                 });
             }
-
-            else if (q.response_type === "open_text") {
+            else {
                 const input = document.createElement("input");
                 input.type = "text";
                 qDiv.appendChild(input);
@@ -105,29 +116,38 @@ function renderSurvey(data) {
         });
 
         container.appendChild(secDiv);
-
-
     });
+
+    wrapper.scrollTop = 0;
+
+
 }
 
-// LOAD CHAT HISTORY
 async function loadChat() {
-    const res = await fetch(BASE + "/get-chat");
-    const data = await res.json();
+    try {
+        const res = await fetch(BASE + "/get-chat");
+        const data = await res.json();
 
-    data.messages.forEach(msg => {
-        if (msg.role === "user") {
-            addMessage(msg.content, "user");
-        } else {
-            addMessage("Previous survey loaded", "bot");
-            if (msg.content.sections) {
-                renderSurvey(msg.content);
+
+        document.getElementById("chatBox").innerHTML = "";
+
+        data.messages.forEach(msg => {
+            if (msg.role === "user") {
+                addMessage(msg.content, "user");
+            } else {
+                addMessage("Loaded response", "bot");
+                if (msg.content.sections) {
+                    renderSurvey(msg.content);
+                }
             }
-        }
-    });
+        });
+    } catch {
+        addMessage("Failed to load chat", "bot");
+    }
+
+
 }
 
-// CLEAR CHAT
 async function clearChat() {
     await fetch(BASE + "/clear-chat", {
         method: "POST",
@@ -136,6 +156,35 @@ async function clearChat() {
 
     document.getElementById("chatBox").innerHTML = "";
     document.getElementById("survey").innerHTML = "";
+    document.getElementById("surveyWrapper").classList.add("hidden");
+
 }
 
-loadChat();
+function submitSurvey() {
+    document.getElementById("surveyWrapper").classList.add("hidden");
+    addMessage("Survey submitted", "bot");
+}
+
+function showTyping() {
+    const box = document.getElementById("chatBox");
+
+    const div = document.createElement("div");
+    div.className = "message bot typing-indicator";
+    div.setAttribute("data-label", "Bot");
+
+    div.innerHTML = `
+    <div class="typing">
+        <span></span>
+        <span></span>
+        <span></span>
+    </div>
+`;
+
+    box.appendChild(div);
+    box.scrollTop = box.scrollHeight;
+
+}
+
+function removeTyping() {
+    document.querySelectorAll(".typing-indicator").forEach(el => el.remove());
+}

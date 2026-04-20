@@ -20,9 +20,9 @@ body {
     background: white;
     border-radius: 15px;
     overflow: hidden;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
 }
 
+/* HEADER */
 h2 {
     padding: 10px;
     background: #111;
@@ -30,114 +30,152 @@ h2 {
     text-align: center;
 }
 
+/* CHAT */
 .chat-box {
     flex: 1;
     overflow-y: auto;
-    padding: 20px;
+    padding: 15px;
     background: #f7f8fc;
     display: flex;
     flex-direction: column;
 }
 
-/* MESSAGE WRAPPER */
-.message {
-    max-width: 70%;
-    margin-bottom: 15px;
-    padding: 12px 15px;
-    border-radius: 12px;
-    position: relative;
-    word-wrap: break-word;
-}
-
-/* USER MESSAGE (RIGHT) */
-.message.user {
-    align-self: flex-end;
-    background: #667eea;
-    color: white;
-    border-bottom-right-radius: 4px;
-}
-
-/* BOT MESSAGE (LEFT) */
-.message.bot {
-    align-self: flex-start;
-    background: #ffffff;
-    color: black;
-    border: 1px solid #ddd;
-    border-bottom-left-radius: 4px;
-}
-
-/* LABEL (You / Bot) */
-.message::before {
-    content: attr(data-label);
-    display: block;
-    font-size: 12px;
-    font-weight: bold;
-    margin-bottom: 5px;
-    opacity: 0.7;
-}
-
-/* SURVEY UI */
-.section {
-    margin-top: 20px;
-    padding: 15px;
-    border-radius: 10px;
-    background: #f1f3ff;
-}
-
-.section h4 {
-    margin-bottom: 10px;
-}
-
-.question {
-    margin: 15px 0;
-    padding: 10px;
-    border-radius: 8px;
-    background: #fff;
-    border: 1px solid #e0e0e0;
-}
-
-label {
-    display: block;
-    padding: 6px 10px;
-    border-radius: 6px;
-    cursor: pointer;
-}
-
-label:hover {
-    background: #eef1ff;
-}
-
-input[type="radio"],
-input[type="checkbox"] {
-    margin-right: 8px;
-}
-
-input[type="text"] {
-    width: 100%;
-    padding: 10px;
-    border-radius: 6px;
-    border: 1px solid #ccc;
-    margin-top: 5px;
-}
-
-button {
-    margin-top: 10px;
-    padding: 15px;
-    border: none;
-    border-radius: 6px;
-    background: #667eea;
-    color: white;
-    cursor: pointer;
-}
-
-.input-area {
+/* SURVEY */
+.survey-wrapper {
+    max-height: 40%;
     display: flex;
-    gap: 15px;
-    padding: 15px;
+    flex-direction: column;
+    border-top: 1px solid #ddd;
+    overflow: hidden;
+}
+
+.survey {
+    flex: 1;
+    overflow-y: auto;
+    padding: 10px;
+}
+
+.submit-area {
+    padding: 10px;
     border-top: 1px solid #ddd;
     background: #fafafa;
 }
 
+/* INPUT FIXED */
+.input-area {
+    flex-shrink: 0;
+    display: flex;
+    gap: 10px;
+    padding: 10px;
+    border-top: 1px solid #ddd;
+    background: white;
+}
+
+/* MESSAGE UI */
+.message {
+    max-width: 70%;
+    margin-bottom: 10px;
+    padding: 10px;
+    border-radius: 10px;
+    word-wrap: break-word;
+}
+
+.message.user {
+    align-self: flex-end;
+    background: #667eea;
+    color: white;
+}
+
+.message.bot {
+    align-self: flex-start;
+    background: #fff;
+    border: 1px solid #ddd;
+}
+
+.message::before {
+    content: attr(data-label);
+    display: block;
+    font-size: 11px;
+    font-weight: bold;
+    margin-bottom: 4px;
+    opacity: 0.6;
+}
+
+/* SURVEY UI */
+.section {
+    margin-top: 10px;
+    padding: 10px;
+    background: #f1f3ff;
+    border-radius: 8px;
+}
+
+.question {
+    margin: 10px 0;
+    padding: 8px;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+}
+
+input[type="text"] {
+    width: 100%;
+    padding: 8px;
+    margin-top: 5px;
+}
+
+/* BUTTON */
+button {
+    padding: 10px;
+    background: #667eea;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
 .input-area input {
-    flex: 4;
+    flex: 1;
+    padding: 10px;
+}
+
+/* HIDE */
+.hidden {
+    display: none;
+}
+
+/* typing bubble */
+.typing {
+    width: 60px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.typing span {
+    width: 8px;
+    height: 8px;
+    background: #999;
+    border-radius: 50%;
+    animation: blink 1.4s infinite;
+}
+
+.typing span:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.typing span:nth-child(3) {
+    animation-delay: 0.4s;
+}
+
+@keyframes blink {
+
+    0%,
+    80%,
+    100% {
+        opacity: 0;
+    }
+
+    40% {
+        opacity: 1;
+    }
 }

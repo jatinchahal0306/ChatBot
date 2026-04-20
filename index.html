@@ -1,49 +1,43 @@
 <!DOCTYPE html>
-<html>
+
+<html lang="en">
 
 <head>
     <meta charset="UTF-8">
-    <title>Chat-bot UI</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Optibot</title>
     <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-    <!DOCTYPE html>
+    <div class="container">
 
-    <html>
+        <h2>Optibot</h2>
 
-    <head>
-        <meta charset="UTF-8">
-        <title>Chat-bot UI</title>
-        <link rel="stylesheet" href="style.css">
-    </head>
+        <!-- CHAT -->
+        <div id="chatBox" class="chat-box"></div>
 
-    <body>
-
-        <div class="container">
-            <h2>Optibot</h2>
-
-            <div id="chatBox" class="chat-box"></div>
-
-            <div class="input-area">
-                <input type="text" id="userInput" placeholder="Type your message..." />
-                <button onclick="sendMessage()">Send</button>
-                <button onclick="clearChat()">Clear</button>
-            </div>
-
+        <!-- SURVEY -->
+        <div id="surveyWrapper" class="survey-wrapper hidden">
             <div id="survey" class="survey"></div>
+
+            <div class="submit-area">
+                <button onclick="submitSurvey()">Submit Survey</button>
+            </div>
+        </div>
+        <!-- INPUTS-->
+        <div class="input-area">
+            <input type="text" id="userInput" placeholder="Type your message..." />
+            <button onclick="sendMessage()">Send</button>
+            <button onclick="clearChat()">Clear</button>
+            <button onclick="loadChat()">Load Chat</button>
         </div>
 
-        <script src="script.js"></script>
-
-
-    </body>
-
-    </html>
-
+    </div>
 
     <script src="script.js"></script>
+
 </body>
 
 </html>
