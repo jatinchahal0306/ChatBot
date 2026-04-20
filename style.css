@@ -6,29 +6,35 @@
 }
 
 body {
-    height: 100vh;
+    min-height: 100vh;
     background: linear-gradient(135deg, #667eea, #764ba2);
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
+/* CONTAINER */
 .container {
     width: 100%;
     max-width: 900px;
     height: 95vh;
-    margin: 10px auto;
-    display: flex;
-    flex-direction: column;
     background: white;
     border-radius: 15px;
+    display: flex;
+    flex-direction: column;
     overflow: hidden;
 }
 
+/* HEADER */
 h2 {
-    padding: 10px;
+    padding: 12px;
     background: #111;
     color: white;
     text-align: center;
+    font-size: 18px;
 }
 
+/* CHAT */
 .chat-box {
     flex: 1;
     overflow-y: auto;
@@ -38,12 +44,14 @@ h2 {
     flex-direction: column;
 }
 
+/* MESSAGE */
 .message {
-    max-width: 75%;
+    max-width: 70%;
     margin-bottom: 10px;
     padding: 10px;
-    border-radius: 10px;
-    word-wrap: break-word;
+    border-radius: 12px;
+    font-size: 14px;
+    line-height: 1.5;
 }
 
 .message.user {
@@ -56,22 +64,22 @@ h2 {
     align-self: flex-start;
     background: #fff;
     border: 1px solid #ddd;
-    line-height: 1.5;
 }
 
+/* LABEL */
 .message::before {
     content: attr(data-label);
     display: block;
-    font-size: 11px;
-    font-weight: bold;
+    font-size: 10px;
     margin-bottom: 4px;
     opacity: 0.6;
 }
 
+/* SURVEY */
 .section {
     margin-top: 10px;
     padding: 10px;
-    background: #f1f3ff;
+    background: #eef1ff;
     border-radius: 8px;
 }
 
@@ -79,6 +87,7 @@ h2 {
     margin: 8px 0;
 }
 
+/* INPUT */
 .input-area {
     display: flex;
     gap: 10px;
@@ -90,26 +99,32 @@ h2 {
 .input-area input {
     flex: 1;
     padding: 10px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
 }
 
+/* BUTTON */
 button {
-    padding: 10px;
+    padding: 10px 14px;
+    font-size: 14px;
     background: #667eea;
     color: white;
     border: none;
+    border-radius: 6px;
     cursor: pointer;
-    border-radius: 5px;
 }
 
+/* TYPING */
 .typing {
-    width: 60px;
+    width: 50px;
     display: flex;
     justify-content: space-between;
 }
 
 .typing span {
-    width: 8px;
-    height: 8px;
+    width: 6px;
+    height: 6px;
     background: #999;
     border-radius: 50%;
     animation: blink 1.4s infinite;
@@ -134,4 +149,44 @@ button {
     40% {
         opacity: 1;
     }
+}
+
+@media (max-width: 768px) {
+
+    body {
+        background: white;
+        align-items: stretch;
+    }
+
+    .container {
+        height: 100vh;
+        max-width: 100%;
+        border-radius: 0;
+    }
+
+    h2 {
+        font-size: 16px;
+        padding: 10px;
+    }
+
+    .message {
+        max-width: 90%;
+        font-size: 13px;
+    }
+
+    .input-area {
+        gap: 6px;
+        padding: 8px;
+    }
+
+    .input-area input {
+        padding: 8px;
+        font-size: 13px;
+    }
+
+    button {
+        padding: 8px 10px;
+        font-size: 13px;
+    }
+
 }
