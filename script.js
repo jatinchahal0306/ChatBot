@@ -168,12 +168,12 @@ function showTyping() {
     div.className = "message bot typing-indicator";
     div.setAttribute("data-label", "Bot");
 
-    div.innerHTML = `
-            < div class="typing" >
-    <span></span>
-    <span></span>
-    <span></span>
-</div > `;
+    div.innerHTML =
+        < div class="typing" >
+            <span></span>
+            <span></span>
+            <span></span>
+        </div >;
 
     box.appendChild(div);
     box.scrollTop = box.scrollHeight;
