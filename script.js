@@ -178,40 +178,47 @@ async function clearChat() {
 
 }
 
-async function loadChat() {
-    try {
-        const res = await fetch(BASE + "/get-chat");
-        const data = await res.json();
+function loadChat() {
 
-        const chatBox = document.getElementById("chatBox");
-        chatBox.innerHTML = "";
+    const chatBox = document.getElementById("chatBox");
+    chatBox.innerHTML = "";
 
-        data.messages.forEach(msg => {
+    fetch(BASE + "/get-chat")
+        .then(res => res.json())
+        .then(data => {
 
-            if (msg.role === "user") {
-                addMessage(msg.content, "user");
-            }
-
-            else if (msg.role === "assistant") {
-
-                if (typeof msg.content === "string") {
-                    addMessage(msg.content, "bot");
+            data.messages.forEach(msg => {
+                if (msg.role === "user") {
+                    addMessage(msg.content, "user");
+                } else {
+                    if (typeof msg.content === "string") {
+                        addMessage(msg.content, "bot");
+                    } else if (msg.content && msg.content.sections) {
+                        addMessage("Survey generated", "bot");
+                    }
                 }
+            });
 
-                else if (msg.content && msg.content.sections) {
-                    addMessage("Survey loaded from history", "bot");
+            const history = JSON.parse(localStorage.getItem("surveyHistory")) || [];
 
-                    renderSurveySummary(msg.content);
+            history.forEach(item => {
+                if (item.type === "survey_response") {
+                    renderSurveySummary(item.answers);
                 }
-            }
+            });
 
+        })
+        .catch(() => {
+            addMessage("Failed to load chat", "bot");
+
+            const history = JSON.parse(localStorage.getItem("surveyHistory")) || [];
+
+            history.forEach(item => {
+                renderSurveySummary(item.answers);
+            });
         });
-
-    } catch (err) {
-        addMessage("Failed to load chat ❌", "bot");
-    }
-
 }
+
 
 
 function showTyping() {
