@@ -2,28 +2,23 @@ const BASE = "api";
 
 function addMessage(text, type) {
     const box = document.getElementById("chatBox");
-
-
     const div = document.createElement("div");
     div.className = "message " + type;
     div.setAttribute("data-label", type === "user" ? "You" : "Bot");
     div.innerText = text;
-
     box.appendChild(div);
     box.scrollTop = box.scrollHeight;
-
-
 }
+
 async function sendMessage() {
     const input = document.getElementById("userInput");
     const msg = input.value.trim();
     if (!msg) return;
 
-    setLoading(true);
 
+    setLoading(true);
     addMessage(msg, "user");
     input.value = "";
-
     showTyping();
 
     try {
@@ -50,20 +45,20 @@ async function sendMessage() {
         addMessage("Server error", "bot");
     }
 
-    setLoading(false); // 🔥 enable back
+    setLoading(false);
+
 
 }
 
-
 function renderSurvey(data) {
-    window.currentSurvey = data
+    window.currentSurvey = data;
+
+
     const wrapper = document.getElementById("surveyWrapper");
     const container = document.getElementById("survey");
 
-
     wrapper.classList.remove("hidden");
     document.body.style.overflow = "hidden";
-
     container.innerHTML = "";
 
     const title = document.createElement("h3");
@@ -91,7 +86,6 @@ function renderSurvey(data) {
                     const radio = document.createElement("input");
                     radio.type = "radio";
                     radio.name = q.question_id;
-
                     qDiv.appendChild(radio);
                     qDiv.appendChild(document.createTextNode(opt));
                     qDiv.appendChild(document.createElement("br"));
@@ -100,7 +94,6 @@ function renderSurvey(data) {
                 q.options?.forEach(opt => {
                     const check = document.createElement("input");
                     check.type = "checkbox";
-
                     qDiv.appendChild(check);
                     qDiv.appendChild(document.createTextNode(opt));
                     qDiv.appendChild(document.createElement("br"));
@@ -121,20 +114,17 @@ function renderSurvey(data) {
 }
 
 function submitSurvey() {
-
-
     const answers = {};
 
-    document.querySelectorAll(".question").forEach(q => {
 
+    document.querySelectorAll(".question").forEach(q => {
         const inputs = q.querySelectorAll("input");
         let value = [];
 
         inputs.forEach(input => {
             if ((input.type === "radio" || input.type === "checkbox") && input.checked) {
                 value.push(input.nextSibling.textContent);
-            }
-            else if (input.type === "text" && input.value) {
+            } else if (input.type === "text" && input.value) {
                 value.push(input.value);
             }
         });
@@ -145,48 +135,34 @@ function submitSurvey() {
 
     const history = JSON.parse(localStorage.getItem("surveyHistory")) || [];
 
-    history.push({
+    const newItem = {
         type: "survey_response",
         title: window.currentSurvey?.survey_title || "Survey",
         survey: window.currentSurvey,
         answers: answers,
         time: new Date().toLocaleString()
-    });
+    };
 
+    history.push(newItem);
     localStorage.setItem("surveyHistory", JSON.stringify(history));
 
     document.getElementById("surveyWrapper").classList.add("hidden");
     document.body.style.overflow = "auto";
 
     addMessage("Survey submitted ✅", "bot");
-
-    renderSurveySummary(history[history.length - 1]);
-
-
-}
-
-
-async function clearChat() {
-    await fetch(BASE + "/clear-chat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" }
-    });
-
-
-    document.getElementById("chatBox").innerHTML = "";
+    renderSurveySummary(newItem);
 
 
 }
 
 function loadChat() {
-
     const chatBox = document.getElementById("chatBox");
     chatBox.innerHTML = "";
+
 
     fetch(BASE + "/get-chat")
         .then(res => res.json())
         .then(data => {
-
             data.messages.forEach(msg => {
                 if (msg.role === "user") {
                     addMessage(msg.content, "user");
@@ -200,23 +176,51 @@ function loadChat() {
             });
 
             const history = JSON.parse(localStorage.getItem("surveyHistory")) || [];
-
             history.forEach(item => {
                 if (item.type === "survey_response") {
-                    renderSurveySummary(item.answers);
+                    renderSurveySummary(item);
                 }
             });
-
         })
         .catch(() => {
             addMessage("Failed to load chat", "bot");
-
             const history = JSON.parse(localStorage.getItem("surveyHistory")) || [];
-
-            history.forEach(item => {
-                renderSurveySummary(item.answers);
-            });
+            history.forEach(item => renderSurveySummary(item));
         });
+
+
+}
+
+async function clearChat() {
+    await fetch(BASE + "/clear-chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" }
+    });
+    document.getElementById("chatBox").innerHTML = "";
+}
+
+function renderSurveySummary(item) {
+    const box = document.getElementById("chatBox");
+
+
+    const div = document.createElement("div");
+    div.className = "message bot";
+    div.setAttribute("data-label", "You (Survey)");
+
+    let html = `
+    <b>📋 ${item.title}</b><br>
+    <small>${item.time}</small><br><br>
+`;
+
+    Object.entries(item.answers).forEach(([q, ans]) => {
+        html += `<div><b>${q}</b><br>${ans || "No answer"}</div><br>`;
+    });
+
+    div.innerHTML = html;
+    box.appendChild(div);
+    box.scrollTop = box.scrollHeight;
+
+
 }
 
 function showTyping() {
@@ -238,13 +242,13 @@ function showTyping() {
     box.appendChild(div);
     box.scrollTop = box.scrollHeight;
 
+
 }
 
 function removeTyping() {
     document.querySelectorAll(".typing-indicator").forEach(el => el.remove());
 }
 
-/* CLICK OUTSIDE CLOSE */
 document.getElementById("surveyWrapper").addEventListener("click", function (e) {
     if (e.target.id === "surveyWrapper") {
         this.classList.add("hidden");
@@ -264,24 +268,4 @@ function setLoading(isLoading) {
         btn.style.cursor = isLoading ? "not-allowed" : "pointer";
     });
 
-}
-function renderSurveySummary(item) {
-    const box = document.getElementById("chatBox");
-    const div = document.createElement("div");
-    div.className = "message bot";
-    div.setAttribute("data-label", "You (Survey)");
-
-    let html = `
-    <b>📋 ${item.title}</b><br>
-    <small>${item.time}</small><br><br>
-`;
-
-    Object.entries(item.answers).forEach(([q, ans]) => {
-        html += `<div><b>${q}</b><br>${ans || "No answer"}</div><br>`;
-    });
-
-    div.innerHTML = html;
-
-    box.appendChild(div);
-    box.scrollTop = box.scrollHeight;
 }
