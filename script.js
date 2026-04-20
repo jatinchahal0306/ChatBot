@@ -14,12 +14,12 @@ function addMessage(text, type) {
 
 
 }
-
 async function sendMessage() {
     const input = document.getElementById("userInput");
     const msg = input.value.trim();
     if (!msg) return;
 
+    setLoading(true); // 🔥 disable
 
     addMessage(msg, "user");
     input.value = "";
@@ -50,8 +50,10 @@ async function sendMessage() {
         addMessage("Server error", "bot");
     }
 
+    setLoading(false); // 🔥 enable back
 
 }
+
 
 function renderSurvey(data) {
     const wrapper = document.getElementById("surveyWrapper");
@@ -192,3 +194,17 @@ document.getElementById("surveyWrapper").addEventListener("click", function (e) 
         document.body.style.overflow = "auto";
     }
 });
+
+function setLoading(isLoading) {
+    const input = document.getElementById("userInput");
+    const buttons = document.querySelectorAll(".input-area button");
+
+    input.disabled = isLoading;
+
+    buttons.forEach(btn => {
+        btn.disabled = isLoading;
+        btn.style.opacity = isLoading ? "0.6" : "1";
+        btn.style.cursor = isLoading ? "not-allowed" : "pointer";
+    });
+
+}
