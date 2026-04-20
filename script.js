@@ -1,4 +1,5 @@
-const BASE = "api";
+const BASE = "http://136.119.158.223:8000";
+// const USE_MOCK = true;
 
 function addMessage(text, type) {
     const box = document.getElementById("chatBox");
@@ -22,6 +23,47 @@ async function sendMessage() {
     showTyping();
 
     try {
+
+        /* ================= MOCK MODE =================
+        setTimeout(() => {
+            removeTyping();
+    
+            const mockData = {
+                survey_title: "Demo Beverage Survey",
+                sections: [
+                    {
+                        section_name: "Screener",
+                        questions: [
+                            {
+                                question_text: "What is your age group?",
+                                options: ["18-24", "25-30", "31-34"]
+                            },
+                            {
+                                question_text: "Do you drink energy beverages?",
+                                options: ["Yes", "No"]
+                            }
+                        ]
+                    },
+                    {
+                        section_name: "Concept Evaluation",
+                        questions: [
+                            {
+                                question_text: "How appealing is this product?",
+                                options: ["Very appealing", "Neutral", "Not appealing"]
+                            }
+                        ]
+                    }
+                ]
+            };
+    
+            addMessage("Survey generated (mock)", "bot");
+            renderSurvey(mockData);
+            setLoading(false);
+    
+        }, 1000);
+        return;
+        ================================================= */
+
         const res = await fetch(BASE + "/send-message", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -51,106 +93,34 @@ async function sendMessage() {
 }
 
 function renderSurvey(data) {
-    window.currentSurvey = data;
+    const box = document.getElementById("chatBox");
 
 
-    const wrapper = document.getElementById("surveyWrapper");
-    const container = document.getElementById("survey");
+    const div = document.createElement("div");
+    div.className = "message bot";
+    div.setAttribute("data-label", "Bot");
 
-    wrapper.classList.remove("hidden");
-    document.body.style.overflow = "hidden";
-    container.innerHTML = "";
-
-    const title = document.createElement("h3");
-    title.innerText = data.survey_title || "Survey";
-    container.appendChild(title);
+    let html = `<b>📋 ${data.survey_title || "Survey"}</b><br><br>`;
 
     data.sections?.forEach(sec => {
-        const secDiv = document.createElement("div");
-        secDiv.className = "section";
-
-        const h4 = document.createElement("h4");
-        h4.innerText = sec.section_name;
-        secDiv.appendChild(h4);
+        html += `<div class="section"><b>${sec.section_name}</b>`;
 
         sec.questions?.forEach(q => {
-            const qDiv = document.createElement("div");
-            qDiv.className = "question";
-
-            const label = document.createElement("p");
-            label.innerText = q.question_text;
-            qDiv.appendChild(label);
-
-            if (q.response_type === "single_choice") {
-                q.options?.forEach(opt => {
-                    const radio = document.createElement("input");
-                    radio.type = "radio";
-                    radio.name = q.question_id;
-                    qDiv.appendChild(radio);
-                    qDiv.appendChild(document.createTextNode(opt));
-                    qDiv.appendChild(document.createElement("br"));
+            html += `<div class="question"><b>• ${q.question_text}</b><br>`;
+            if (q.options) {
+                q.options.forEach(opt => {
+                    html += `- ${opt}<br>`;
                 });
-            } else if (q.response_type === "multi_choice") {
-                q.options?.forEach(opt => {
-                    const check = document.createElement("input");
-                    check.type = "checkbox";
-                    qDiv.appendChild(check);
-                    qDiv.appendChild(document.createTextNode(opt));
-                    qDiv.appendChild(document.createElement("br"));
-                });
-            } else {
-                const input = document.createElement("input");
-                input.type = "text";
-                qDiv.appendChild(input);
             }
-
-            secDiv.appendChild(qDiv);
+            html += `</div>`;
         });
 
-        container.appendChild(secDiv);
+        html += `</div>`;
     });
 
-
-}
-
-function submitSurvey() {
-    const answers = {};
-
-
-    document.querySelectorAll(".question").forEach(q => {
-        const inputs = q.querySelectorAll("input");
-        let value = [];
-
-        inputs.forEach(input => {
-            if ((input.type === "radio" || input.type === "checkbox") && input.checked) {
-                value.push(input.nextSibling.textContent);
-            } else if (input.type === "text" && input.value) {
-                value.push(input.value);
-            }
-        });
-
-        const question = q.querySelector("p").innerText;
-        answers[question] = value.join(", ");
-    });
-
-    const history = JSON.parse(localStorage.getItem("surveyHistory")) || [];
-
-    const newItem = {
-        type: "survey_response",
-        title: window.currentSurvey?.survey_title || "Survey",
-        survey: window.currentSurvey,
-        answers: answers,
-        time: new Date().toLocaleString()
-    };
-
-    history.push(newItem);
-    localStorage.setItem("surveyHistory", JSON.stringify(history));
-
-    document.getElementById("surveyWrapper").classList.add("hidden");
-    document.body.style.overflow = "auto";
-
-    addMessage("Survey submitted ✅", "bot");
-    renderSurveySummary(newItem);
+    div.innerHTML = html;
+    box.appendChild(div);
+    box.scrollTop = box.scrollHeight;
 
 
 }
@@ -159,6 +129,28 @@ function loadChat() {
     const chatBox = document.getElementById("chatBox");
     chatBox.innerHTML = "";
 
+
+    /* ================= MOCK HISTORY =================
+    addMessage("Create a survey", "user");
+    
+    const mockSurvey = {
+        survey_title: "Previous Survey",
+        sections: [
+            {
+                section_name: "Usage",
+                questions: [
+                    {
+                        question_text: "How often do you drink soda?",
+                        options: ["Daily", "Weekly", "Rarely"]
+                    }
+                ]
+            }
+        ]
+    };
+    
+    renderSurvey(mockSurvey);
+    return;
+    ================================================= */
 
     fetch(BASE + "/get-chat")
         .then(res => res.json())
@@ -170,22 +162,13 @@ function loadChat() {
                     if (typeof msg.content === "string") {
                         addMessage(msg.content, "bot");
                     } else if (msg.content && msg.content.sections) {
-                        addMessage("Survey generated", "bot");
+                        renderSurvey(msg.content);
                     }
-                }
-            });
-
-            const history = JSON.parse(localStorage.getItem("surveyHistory")) || [];
-            history.forEach(item => {
-                if (item.type === "survey_response") {
-                    renderSurveySummary(item);
                 }
             });
         })
         .catch(() => {
             addMessage("Failed to load chat", "bot");
-            const history = JSON.parse(localStorage.getItem("surveyHistory")) || [];
-            history.forEach(item => renderSurveySummary(item));
         });
 
 
@@ -199,37 +182,12 @@ async function clearChat() {
     document.getElementById("chatBox").innerHTML = "";
 }
 
-function renderSurveySummary(item) {
-    const box = document.getElementById("chatBox");
-
-
-    const div = document.createElement("div");
-    div.className = "message bot";
-    div.setAttribute("data-label", "You (Survey)");
-
-    let html = `
-    <b>📋 ${item.title}</b><br>
-    <small>${item.time}</small><br><br>
-`;
-
-    Object.entries(item.answers).forEach(([q, ans]) => {
-        html += `<div><b>${q}</b><br>${ans || "No answer"}</div><br>`;
-    });
-
-    div.innerHTML = html;
-    box.appendChild(div);
-    box.scrollTop = box.scrollHeight;
-
-
-}
-
 function showTyping() {
     const box = document.getElementById("chatBox");
-
-
     const div = document.createElement("div");
     div.className = "message bot typing-indicator";
     div.setAttribute("data-label", "Bot");
+
 
     div.innerHTML = `
     <div class="typing">
@@ -249,16 +207,10 @@ function removeTyping() {
     document.querySelectorAll(".typing-indicator").forEach(el => el.remove());
 }
 
-document.getElementById("surveyWrapper").addEventListener("click", function (e) {
-    if (e.target.id === "surveyWrapper") {
-        this.classList.add("hidden");
-        document.body.style.overflow = "auto";
-    }
-});
-
 function setLoading(isLoading) {
     const input = document.getElementById("userInput");
     const buttons = document.querySelectorAll(".input-area button");
+
 
     input.disabled = isLoading;
 
@@ -268,4 +220,9 @@ function setLoading(isLoading) {
         btn.style.cursor = isLoading ? "not-allowed" : "pointer";
     });
 
+
 }
+
+window.addEventListener("DOMContentLoaded", () => {
+    loadChat();
+});

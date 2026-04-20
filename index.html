@@ -12,36 +12,20 @@
 <body>
 
     <div class="container">
-
         <h2>Optibot</h2>
 
         <div id="chatBox" class="chat-box"></div>
-
-        <div id="surveyWrapper" class="survey-wrapper hidden">
-            <div class="modal-box">
-
-                <button class="close-btn" onclick="submitSurvey()">✖</button>
-
-                <div id="survey" class="survey"></div>
-
-                <div class="submit-area">
-                    <button onclick="submitSurvey()">Submit Survey</button>
-                </div>
-
-            </div>
-        </div>
 
         <div class="input-area">
             <input type="text" id="userInput" placeholder="Type your message..." />
             <button onclick="sendMessage()">Send</button>
             <button onclick="clearChat()">Clear</button>
-            <button onclick="loadChat()">Load Chat</button>
         </div>
+
 
     </div>
 
     <script src="script.js"></script>
-
 
 </body>
 
