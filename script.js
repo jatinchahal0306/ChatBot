@@ -1,4 +1,4 @@
-const BASE = "http://136.119.158.223:8000";
+const BASE = "api";
 
 function addMessage(text, type) {
     const box = document.getElementById("chatBox");
