@@ -1,4 +1,4 @@
-const BASE = "api";
+const BASE = "http://136.119.158.223:8000";
 
 function addMessage(text, type) {
     const box = document.getElementById("chatBox");
@@ -179,9 +179,16 @@ function showTyping() {
     box.appendChild(div);
     box.scrollTop = box.scrollHeight;
 
-
 }
 
 function removeTyping() {
     document.querySelectorAll(".typing-indicator").forEach(el => el.remove());
 }
+
+/* CLICK OUTSIDE CLOSE */
+document.getElementById("surveyWrapper").addEventListener("click", function (e) {
+    if (e.target.id === "surveyWrapper") {
+        this.classList.add("hidden");
+        document.body.style.overflow = "auto";
+    }
+});
