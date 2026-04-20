@@ -142,25 +142,39 @@ async function loadChat() {
         const res = await fetch(BASE + "/get-chat");
         const data = await res.json();
 
-
-        document.getElementById("chatBox").innerHTML = "";
+        const chatBox = document.getElementById("chatBox");
+        chatBox.innerHTML = ""; // clear previous
 
         data.messages.forEach(msg => {
+
             if (msg.role === "user") {
                 addMessage(msg.content, "user");
-            } else {
-                addMessage("Loaded response", "bot");
-                if (msg.content.sections) {
+            }
+
+            else if (msg.role === "assistant") {
+
+                // case 1: normal text
+                if (typeof msg.content === "string") {
+                    addMessage(msg.content, "bot");
+                }
+
+                // case 2: survey JSON
+                else if (msg.content && msg.content.sections) {
+                    addMessage("Survey loaded from history", "bot");
+
+                    // show last survey only
                     renderSurvey(msg.content);
                 }
             }
+
         });
-    } catch {
-        addMessage("Failed to load chat", "bot");
+
+    } catch (err) {
+        addMessage("Failed to load chat ❌", "bot");
     }
 
-
 }
+
 
 function showTyping() {
     const box = document.getElementById("chatBox");
