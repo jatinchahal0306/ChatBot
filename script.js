@@ -201,7 +201,7 @@ async function loadChat() {
                 else if (msg.content && msg.content.sections) {
                     addMessage("Survey loaded from history", "bot");
 
-                    renderSurvey(msg.content);
+                    renderSurveySummary(msg.content);
                 }
             }
 
@@ -265,7 +265,7 @@ function renderSurveySummary(answers) {
 
     const div = document.createElement("div");
     div.className = "message bot";
-    div.setAttribute("data-label", "You (Survey)");
+    div.setAttribute("data-label", "Your filled (Survey)");
 
     let html = "<b>Your Responses:</b><br><br>";
 
