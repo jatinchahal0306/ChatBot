@@ -120,10 +120,51 @@ function renderSurvey(data) {
 }
 
 function submitSurvey() {
+
+    const answers = {};
+
+    document.querySelectorAll(".question").forEach(q => {
+
+        const inputs = q.querySelectorAll("input");
+        let value = [];
+
+        inputs.forEach(input => {
+            if ((input.type === "radio" || input.type === "checkbox") && input.checked) {
+                value.push(input.nextSibling.textContent);
+            }
+            else if (input.type === "text" && input.value) {
+                value.push(input.value);
+            }
+        });
+
+        const question = q.querySelector("p").innerText;
+        answers[question] = value.join(", ");
+    });
+
+
+    const history = JSON.parse(localStorage.getItem("surveyHistory")) || [];
+
+    history.push({
+        type: "survey_response",
+        answers: answers,
+        time: new Date().toLocaleString()
+    });
+
+
+    localStorage.setItem("surveyHistory", JSON.stringify(history));
+
+
     document.getElementById("surveyWrapper").classList.add("hidden");
     document.body.style.overflow = "auto";
-    addMessage("Survey submitted ", "bot");
+
+    addMessage("Survey submitted ✅", "bot");
+
+
+    renderSurveySummary(answers);
+
+
 }
+
 
 async function clearChat() {
     await fetch(BASE + "/clear-chat", {
@@ -143,7 +184,7 @@ async function loadChat() {
         const data = await res.json();
 
         const chatBox = document.getElementById("chatBox");
-        chatBox.innerHTML = ""; // clear previous
+        chatBox.innerHTML = "";
 
         data.messages.forEach(msg => {
 
@@ -153,16 +194,13 @@ async function loadChat() {
 
             else if (msg.role === "assistant") {
 
-                // case 1: normal text
                 if (typeof msg.content === "string") {
                     addMessage(msg.content, "bot");
                 }
 
-                // case 2: survey JSON
                 else if (msg.content && msg.content.sections) {
                     addMessage("Survey loaded from history", "bot");
 
-                    // show last survey only
                     renderSurvey(msg.content);
                 }
             }
@@ -220,5 +258,24 @@ function setLoading(isLoading) {
         btn.style.opacity = isLoading ? "0.6" : "1";
         btn.style.cursor = isLoading ? "not-allowed" : "pointer";
     });
+
+}
+function renderSurveySummary(answers) {
+    const box = document.getElementById("chatBox");
+
+    const div = document.createElement("div");
+    div.className = "message bot";
+    div.setAttribute("data-label", "You (Survey)");
+
+    let html = "<b>Your Responses:</b><br><br>";
+
+    Object.entries(answers).forEach(([q, ans]) => {
+        html += `<div><b>${q}</b><br>${ans || "No answer"}</div><br>`;
+    });
+
+    div.innerHTML = html;
+
+    box.appendChild(div);
+    box.scrollTop = box.scrollHeight;
 
 }
