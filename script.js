@@ -19,7 +19,7 @@ async function sendMessage() {
     const msg = input.value.trim();
     if (!msg) return;
 
-    setLoading(true); // 🔥 disable
+    setLoading(true);
 
     addMessage(msg, "user");
     input.value = "";
@@ -122,7 +122,7 @@ function renderSurvey(data) {
 function submitSurvey() {
     document.getElementById("surveyWrapper").classList.add("hidden");
     document.body.style.overflow = "auto";
-    addMessage("Survey submitted ✅", "bot");
+    addMessage("Survey submitted ", "bot");
 }
 
 async function clearChat() {
