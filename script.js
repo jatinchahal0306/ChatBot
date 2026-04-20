@@ -1,4 +1,4 @@
-const BASE = "http://136.119.158.223:8000";
+const BASE = "http://136.109.217.182:8000";
 
 function addMessage(text, type) {
     const box = document.getElementById("chatBox");
@@ -6,7 +6,6 @@ function addMessage(text, type) {
     const div = document.createElement("div");
     div.className = "message " + type;
 
-    // ✅ label set
     div.setAttribute("data-label", type === "user" ? "You" : "Bot");
 
     div.innerText = text;
