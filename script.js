@@ -15,6 +15,7 @@ async function sendMessage() {
     const msg = input.value.trim();
     if (!msg) return;
 
+
     setLoading(true);
     addMessage(msg, "user");
     input.value = "";
@@ -46,10 +47,12 @@ async function sendMessage() {
 
     setLoading(false);
 
+
 }
 
 function renderSurvey(data) {
     const box = document.getElementById("chatBox");
+
 
     const div = document.createElement("div");
     div.className = "message bot";
@@ -60,17 +63,47 @@ function renderSurvey(data) {
     if (!data.sections || data.sections.length === 0) {
         html += "No questions available";
     } else {
-        data.sections.forEach(sec => {
-            html += `<div class="section"><b>${sec.section_name}</b>`;
+        data.sections.forEach((sec, secIndex) => {
 
-            sec.questions?.forEach(q => {
-                html += `<div class="question"><b>• ${q.question_text}</b><br>`;
-                if (q.options) {
-                    q.options.forEach(opt => {
-                        html += `- ${opt}<br>`;
+            html += `<div class="section"><b>${sec.section_name}</b><br><br>`;
+
+            sec.questions?.forEach((q, index) => {
+
+                html += `<div class="question">`;
+                html += `<b>Q${index + 1}. ${q.question_text}</b><br>`;
+
+                if (q.response_type === "single_choice") {
+                    html += `<small style="color:gray;">(Select one option)</small><br>`;
+
+                    q.options?.forEach(opt => {
+                        html += `
+                        <label>
+                            <input type="radio" name="sec${secIndex}_q${index}">
+                            ${opt}
+                        </label><br>
+                    `;
                     });
                 }
-                html += `</div>`;
+
+                else if (q.response_type === "multi_choice") {
+                    html += `<small style="color:gray;">(Select one or more options)</small><br>`;
+
+                    q.options?.forEach(opt => {
+                        html += `
+                        <label>
+                            <input type="checkbox">
+                            ${opt}
+                        </label><br>
+                    `;
+                    });
+                }
+
+                else {
+                    html += `<small style="color:gray;">(Type your answer)</small><br>`;
+                    html += `<input type="text" placeholder="Enter your answer"><br>`;
+                }
+
+                html += `</div><br>`;
             });
 
             html += `</div>`;
@@ -81,11 +114,13 @@ function renderSurvey(data) {
     box.appendChild(div);
     box.scrollTop = box.scrollHeight;
 
+
 }
 
 function loadChat() {
     const chatBox = document.getElementById("chatBox");
     chatBox.innerHTML = "";
+
 
     fetch(BASE + "/get-chat")
         .then(res => res.json())
@@ -111,6 +146,7 @@ function loadChat() {
             addMessage("Failed to load chat", "bot");
         });
 
+
 }
 
 async function clearChat() {
@@ -123,6 +159,7 @@ async function clearChat() {
 
 function showTyping() {
     const box = document.getElementById("chatBox");
+
 
     const div = document.createElement("div");
     div.className = "message bot typing-indicator";
@@ -139,6 +176,7 @@ function showTyping() {
     box.appendChild(div);
     box.scrollTop = box.scrollHeight;
 
+
 }
 
 function removeTyping() {
@@ -148,6 +186,7 @@ function removeTyping() {
 function setLoading(isLoading) {
     const input = document.getElementById("userInput");
     const buttons = document.querySelectorAll(".input-area button");
+
 
     input.disabled = isLoading;
 
