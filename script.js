@@ -115,8 +115,6 @@ function renderSurvey(data) {
     div.innerHTML = html;
     box.appendChild(div);
     box.scrollTop = box.scrollHeight;
-
-
 }
 
 function loadChat() {
