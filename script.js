@@ -15,7 +15,6 @@ async function sendMessage() {
     const msg = input.value.trim();
     if (!msg) return;
 
-
     setLoading(true);
     addMessage(msg, "user");
     input.value = "";
@@ -43,7 +42,9 @@ async function sendMessage() {
         removeTyping();
         addMessage("Server error", "bot");
     }
+
     setLoading(false);
+
 }
 
 function renderSurvey(data) {
@@ -68,51 +69,50 @@ function renderSurvey(data) {
 
                 html += `<b>${q.question_id || ""}. ${q.question_text}</b><br>`;
 
-                if (q.response_type === "single_choice") {
-                    html += `<small style="color:gray;">(Select one option)</small><br>`;
+                if (q.question_type) {
+                    html += `<small style="color:gray;">(${q.question_type})</small><br>`;
+                }
 
+                if (q.response_type === "single_choice") {
                     q.options?.forEach(opt => {
                         html += `
-                        <label>
-                            <input type="radio" name="${q.question_id}">
-                            ${opt}
-                        </label><br>
-                    `;
+                    <label>
+                        <input type="radio" name="${q.question_id}">
+                        ${opt}
+                    </label><br>
+                `;
                     });
                 }
 
                 else if (q.response_type === "multi_choice") {
-                    html += `<small style="color:gray;">(Select one or more options)</small><br>`;
-
                     q.options?.forEach(opt => {
                         html += `
-                        <label>
-                            <input type="checkbox">
-                            ${opt}
-                        </label><br>
-                    `;
+                    <label>
+                        <input type="checkbox">
+                        ${opt}
+                    </label><br>
+                `;
                     });
                 }
 
                 else {
-                    html += `<small style="color:gray;">(Type your answer)</small><br>`;
                     html += `<input type="text" placeholder="Enter your answer"><br>`;
                 }
 
                 if (q.logic) {
                     html += `
-                    <div style="
-                        margin-top:6px;
-                        padding:6px;
-                        background:#fff3cd;
-                        border-left:4px solid #ffc107;
-                        font-size:12px;
-                        color:#856404;
-                        border-radius:4px;
-                    ">
-                        ⚠️ Logic: ${q.logic}
-                    </div>
-                `;
+                <div style="
+                    margin-top:6px;
+                    padding:6px;
+                    background:#fff3cd;
+                    border-left:4px solid #ffc107;
+                    font-size:12px;
+                    color:#856404;
+                    border-radius:4px;
+                ">
+                    ⚠️ Logic: ${q.logic}
+                </div>
+            `;
                 }
 
                 html += `</div><br>`;
@@ -125,6 +125,7 @@ function renderSurvey(data) {
     div.innerHTML = html;
     box.appendChild(div);
     box.scrollTop = box.scrollHeight;
+
 }
 
 function loadChat() {
@@ -154,6 +155,7 @@ function loadChat() {
         .catch(() => {
             addMessage("Failed to load chat", "bot");
         });
+
 }
 
 async function clearChat() {
@@ -172,15 +174,17 @@ function showTyping() {
     div.setAttribute("data-label", "Bot");
 
     div.innerHTML = `
-    <div class="typing">
-        <span></span>
-        <span></span>
-        <span></span>
-    </div>
+<div class="typing">
+    <span></span>
+    <span></span>
+    <span></span>
+</div>
+
 `;
 
     box.appendChild(div);
     box.scrollTop = box.scrollHeight;
+
 }
 
 function removeTyping() {
@@ -198,6 +202,7 @@ function setLoading(isLoading) {
         btn.style.opacity = isLoading ? "0.6" : "1";
         btn.style.cursor = isLoading ? "not-allowed" : "pointer";
     });
+
 }
 
 document.getElementById("userInput").addEventListener("keypress", function (e) {
