@@ -39,22 +39,17 @@ async function sendMessage() {
         } else {
             addMessage("No valid response", "bot");
         }
-
     } catch {
         removeTyping();
         addMessage("Server error", "bot");
     }
-
     setLoading(false);
-
-
 }
 
 function renderSurvey(data) {
     const box = document.getElementById("chatBox");
-
-
     const div = document.createElement("div");
+
     div.className = "message bot";
     div.setAttribute("data-label", "Bot");
 
@@ -104,7 +99,6 @@ function renderSurvey(data) {
                     html += `<input type="text" placeholder="Enter your answer"><br>`;
                 }
 
-                // 🔥 NEW: SHOW LOGIC
                 if (q.logic) {
                     html += `
                     <div style="
@@ -131,14 +125,11 @@ function renderSurvey(data) {
     div.innerHTML = html;
     box.appendChild(div);
     box.scrollTop = box.scrollHeight;
-
-
 }
 
 function loadChat() {
     const chatBox = document.getElementById("chatBox");
     chatBox.innerHTML = "";
-
 
     fetch(BASE + "/get-chat")
         .then(res => res.json())
@@ -163,8 +154,6 @@ function loadChat() {
         .catch(() => {
             addMessage("Failed to load chat", "bot");
         });
-
-
 }
 
 async function clearChat() {
@@ -177,9 +166,8 @@ async function clearChat() {
 
 function showTyping() {
     const box = document.getElementById("chatBox");
-
-
     const div = document.createElement("div");
+
     div.className = "message bot typing-indicator";
     div.setAttribute("data-label", "Bot");
 
@@ -193,8 +181,6 @@ function showTyping() {
 
     box.appendChild(div);
     box.scrollTop = box.scrollHeight;
-
-
 }
 
 function removeTyping() {
@@ -205,7 +191,6 @@ function setLoading(isLoading) {
     const input = document.getElementById("userInput");
     const buttons = document.querySelectorAll(".input-area button");
 
-
     input.disabled = isLoading;
 
     buttons.forEach(btn => {
@@ -213,8 +198,6 @@ function setLoading(isLoading) {
         btn.style.opacity = isLoading ? "0.6" : "1";
         btn.style.cursor = isLoading ? "not-allowed" : "pointer";
     });
-
-
 }
 
 document.getElementById("userInput").addEventListener("keypress", function (e) {
