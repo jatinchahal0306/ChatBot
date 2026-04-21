@@ -1,4 +1,4 @@
-const BASE = "api";
+const BASE = "http://136.119.158.223:8000";
 
 function addMessage(text, type) {
     const box = document.getElementById("chatBox");
@@ -70,7 +70,9 @@ function renderSurvey(data) {
             sec.questions?.forEach((q, index) => {
 
                 html += `<div class="question">`;
-                html += `<b>Q${index + 1}. ${q.question_text}</b><br>`;
+
+                // ✅ use API question_id directly
+                html += `<b>${q.question_id || ""}. ${q.question_text}</b><br>`;
 
                 if (q.response_type === "single_choice") {
                     html += `<small style="color:gray;">(Select one option)</small><br>`;
@@ -78,7 +80,7 @@ function renderSurvey(data) {
                     q.options?.forEach(opt => {
                         html += `
                         <label>
-                            <input type="radio" name="sec${secIndex}_q${index}">
+                            <input type="radio" name="${q.question_id}">
                             ${opt}
                         </label><br>
                     `;
