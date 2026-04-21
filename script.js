@@ -71,7 +71,6 @@ function renderSurvey(data) {
 
                 html += `<div class="question">`;
 
-                // ✅ use API question_id directly
                 html += `<b>${q.question_id || ""}. ${q.question_text}</b><br>`;
 
                 if (q.response_type === "single_choice") {
@@ -105,6 +104,23 @@ function renderSurvey(data) {
                     html += `<input type="text" placeholder="Enter your answer"><br>`;
                 }
 
+                // 🔥 NEW: SHOW LOGIC
+                if (q.logic) {
+                    html += `
+                    <div style="
+                        margin-top:6px;
+                        padding:6px;
+                        background:#fff3cd;
+                        border-left:4px solid #ffc107;
+                        font-size:12px;
+                        color:#856404;
+                        border-radius:4px;
+                    ">
+                        ⚠️ Logic: ${q.logic}
+                    </div>
+                `;
+                }
+
                 html += `</div><br>`;
             });
 
@@ -115,6 +131,8 @@ function renderSurvey(data) {
     div.innerHTML = html;
     box.appendChild(div);
     box.scrollTop = box.scrollHeight;
+
+
 }
 
 function loadChat() {
