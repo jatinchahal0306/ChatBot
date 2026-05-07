@@ -101,7 +101,7 @@ async function sendMessage() {
         return;
     }
     try {
-        const res = await fetch(BASE + "/send-message", {
+        const res = await fetch(BASE + "/send_message", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
@@ -223,7 +223,7 @@ function loadChat() {
     const chatBox = document.getElementById("chatBox");
     chatBox.innerHTML = "";
 
-    fetch(BASE + "/get-chat")
+    fetch(BASE + "/get_chat")
         .then(res => res.json())
         .then(data => {
             data.messages.forEach(msg => {
@@ -254,7 +254,7 @@ async function clearChat() {
         document.getElementById("chatBox").innerHTML = "";
         return;
     }
-    await fetch(BASE + "/clear-chat", {
+    await fetch(BASE + "/clear_chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" }
     });
