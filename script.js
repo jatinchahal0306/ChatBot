@@ -122,6 +122,8 @@ async function sendMessage() {
             }
 
         } else if (data.type === "supervisor") {
+            addMessage(data.response, "bot");
+
             if (data.validity === "invalid" && data.reason) {
                 addMessage(data.reason, "bot");
             }
@@ -219,21 +221,46 @@ function renderSurvey(data) {
 }
 
 function loadChat() {
+
     if (MOCK_MODE) return;
+
     const chatBox = document.getElementById("chatBox");
     chatBox.innerHTML = "";
 
-    fetch(BASE + "/get_chat")
+    fetch(BASE + "/get_chat?thread_id=" + THREAD_ID)
+
         .then(res => res.json())
+
         .then(data => {
-            data.messages.forEach(msg => {
+
+            data.function_outputs.forEach(msg => {
+
                 if (msg.role === "user") {
+
                     addMessage(msg.content, "user");
+
                 } else {
-                    if (typeof msg.content === "string") {
-                        addMessage(msg.content, "bot");
-                    } else if (msg.content && msg.content.sections) {
-                        renderSurvey(msg.content);
+
+                    try {
+
+                        const parsed = JSON.parse(msg.content);
+
+                        if (parsed.sections) {
+                            renderSurvey(parsed);
+                        } else {
+                            addMessage(msg.content, "bot");
+                        }
+
+                    } catch {
+
+                        if (msg.content.startsWith("[Suggestion]")) {
+
+                            addMessage("💡 " + msg.content.replace("[Suggestion]", "").trim(), "bot");
+
+                        } else {
+
+                            addMessage(msg.content, "bot");
+                        }
                     }
                 }
             });
@@ -243,10 +270,13 @@ function loadChat() {
             }, 100);
 
         })
-        .catch(() => {
-            addMessage("Failed to load chat", "bot");
-        });
 
+        .catch(err => {
+
+            console.error(err);
+            addMessage("Failed to load chat", "bot");
+
+        });
 }
 
 async function clearChat() {
