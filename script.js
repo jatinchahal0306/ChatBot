@@ -1,5 +1,5 @@
 const BASE = "/api";
-const MOCK_MODE = false;
+const MOCK_MODE = true;
 const THREAD_ID = "default_session";
 
 function addMessage(text, type) {
@@ -124,9 +124,9 @@ async function sendMessage() {
         } else if (data.type === "supervisor") {
             addMessage(data.response, "bot");
 
-            if (data.validity === "invalid" && data.reason) {
-                addMessage(data.reason, "bot");
-            }
+            // if (data.validity === "invalid" && data.reason) {
+            //     addMessage(data.reason, "bot");
+            // }
         } else {
             addMessage("No valid response", "bot");
         }
