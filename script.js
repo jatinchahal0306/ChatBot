@@ -1,5 +1,5 @@
 const BASE = "/api";
-const MOCK_MODE = true;
+const MOCK_MODE = false;
 const THREAD_ID = "default_session";
 
 function addMessage(text, type) {
