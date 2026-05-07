@@ -1,4 +1,6 @@
-const BASE = "api";
+const BASE = "/api";
+const MOCK_MODE = false;
+const THREAD_ID = "default_session";
 
 function addMessage(text, type) {
     const box = document.getElementById("chatBox");
@@ -19,22 +21,110 @@ async function sendMessage() {
     addMessage(msg, "user");
     input.value = "";
     showTyping();
+    if (MOCK_MODE) {
 
+        setTimeout(() => {
+
+            removeTyping();
+
+            let data;
+
+            if (msg.toLowerCase().includes("survey")) {
+
+                data = {
+                    type: "questionnaire",
+                    response: {
+                        survey_title: "Coffee Habits Survey",
+                        sections: [
+                            {
+                                section_name: "General",
+                                questions: [
+                                    {
+                                        question_id: "Q1",
+                                        question_type: "single_select",
+                                        question_text: "How often do you drink coffee?",
+                                        response_type: "single_choice",
+                                        options: [
+                                            "Daily",
+                                            "Weekly",
+                                            "Rarely"
+                                        ],
+                                        logic: null
+                                    },
+                                    {
+                                        question_id: "Q2",
+                                        question_type: "open_end",
+                                        question_text: "Why do you like coffee?",
+                                        response_type: "open_text",
+                                        options: null,
+                                        logic: null
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    followup: "You can refine the questionnaire further."
+                };
+
+            } else {
+
+                data = {
+                    type: "supervisor",
+                    response: "Please ask something related to questionnaire generation.",
+                    validity: "invalid",
+                    reason: "User query is not related to questionnaire generation/editing"
+                };
+            }
+
+            if (data.type === "questionnaire") {
+
+                addMessage("Survey generated", "bot");
+                renderSurvey(data.response);
+
+                if (data.followup) {
+                    addMessage("💡 " + data.followup, "bot");
+                }
+
+            } else {
+
+                addMessage(data.response, "bot");
+
+                if (data.validity === "invalid" && data.reason) {
+                    addMessage("⚠️ " + data.reason, "bot");
+                }
+            }
+
+            setLoading(false);
+
+        }, 1000);
+
+        return;
+    }
     try {
         const res = await fetch(BASE + "/send-message", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ message: msg })
+            body: JSON.stringify({
+                message: msg,
+                thread_id: THREAD_ID
+            })
         });
 
         const data = await res.json();
         removeTyping();
 
-        if (data.parsed_json) {
+        if (data.type === "questionnaire") {
             addMessage("Survey generated", "bot");
-            renderSurvey(data.parsed_json);
-        } else if (data.assistant_text) {
-            addMessage(data.assistant_text, "bot");
+            renderSurvey(data.response);
+
+            if (data.followup) {
+                addMessage(data.followup, "bot");
+            }
+
+        } else if (data.type === "supervisor") {
+            if (data.validity === "invalid" && data.reason) {
+                addMessage(data.reason, "bot");
+            }
         } else {
             addMessage("No valid response", "bot");
         }
@@ -129,6 +219,7 @@ function renderSurvey(data) {
 }
 
 function loadChat() {
+    if (MOCK_MODE) return;
     const chatBox = document.getElementById("chatBox");
     chatBox.innerHTML = "";
 
@@ -159,6 +250,10 @@ function loadChat() {
 }
 
 async function clearChat() {
+    if (MOCK_MODE) {
+        document.getElementById("chatBox").innerHTML = "";
+        return;
+    }
     await fetch(BASE + "/clear-chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" }
